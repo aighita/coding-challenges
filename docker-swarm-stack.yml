@@ -3,7 +3,8 @@ version: '3.8'
 services:
   # 1. Gateway Service
   gateway:
-    image: node:18-alpine
+    image: coding-challenges/gateway:latest
+    build: ./gateway
     deploy:
       replicas: 1
       restart_policy:
@@ -15,8 +16,11 @@ services:
       - service_net
     environment:
       - PORT=8080
-    volumes:
-      - ./gateway:/app
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redispassword
+      - AUTH_SERVICE_URL=http://auth:8080
+      - USERS_SERVICE_URL=http://users:3000
+      - CHALLENGES_SERVICE_URL=http://challenges:3000
 
   # 2. Auth Service (Keycloak)
   auth:
@@ -36,29 +40,32 @@ services:
 
   # 3. User Service
   users:
-    image: node:18-alpine
+    image: coding-challenges/users:latest
+    build: ./users
     deploy:
       replicas: 1
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
     networks:
       - service_net
       - db_net
-    volumes:
-      - ./users:/app
 
   # 4. Challenges Service
   challenges:
-    image: node:18-alpine
+    image: coding-challenges/challenges:latest
+    build: ./challenges
     deploy:
       replicas: 1
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
+      - RABBITMQ_URL=amqp://user:password@broker:5672
     networks:
       - service_net
       - db_net
-    volumes:
-      - ./challenges:/app
 
   # 5. Sandbox Runner Service (Replicated)
   sandbox-runner:
-    image: python:3.9-slim
+    image: coding-challenges/sandbox-runner:latest
     build: ./sandbox-runner
     deploy:
       replicas: 2
@@ -69,20 +76,23 @@ services:
       - service_net
       - broker_net
       - db_net
-    volumes:
-      - ./sandbox-runner:/app
 
   # 6. Frontend
   frontend:
-    image: node:18-alpine
+    image: coding-challenges/frontend:latest
+    build: ./frontend
     deploy:
       replicas: 1
     ports:
       - "3000:3000"
+    environment:
+      - KEYCLOAK_CLIENT_ID=frontend-client
+      - KEYCLOAK_CLIENT_SECRET=
+      - KEYCLOAK_ISSUER=http://localhost:8081/realms/coding-challenges
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=supersecret
     networks:
       - public_net
-    volumes:
-      - ./frontend:/app
 
   # 7. Database (PostgreSQL)
   db:
