@@ -1,0 +1,78 @@
+{
+  "realm": "coding-challenges",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "student",
+        "description": "Student role"
+      },
+      {
+        "name": "editor",
+        "description": "Editor role - can create challenges"
+      },
+      {
+        "name": "admin",
+        "description": "Admin role"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@example.com",
+      "firstName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "student",
+      "enabled": true,
+      "email": "student@example.com",
+      "firstName": "Student",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["student"]
+    },
+    {
+      "username": "editor",
+      "enabled": true,
+      "email": "editor@example.com",
+      "firstName": "Editor",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "editor",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["editor"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "frontend-client",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"]
+    },
+    {
+      "clientId": "backend-client",
+      "enabled": true,
+      "bearerOnly": true
+    }
+  ]
+}
