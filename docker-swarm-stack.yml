@@ -58,16 +58,19 @@ services:
 
   # 5. Sandbox Runner Service (Replicated)
   sandbox-runner:
-    image: node:18-alpine
+    image: python:3.9-slim
+    build: ./sandbox-runner
     deploy:
       replicas: 2
+    environment:
+      - RABBITMQ_URL=amqp://user:password@broker:5672
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
     networks:
       - service_net
       - broker_net
       - db_net
     volumes:
       - ./sandbox-runner:/app
-      - /var/run/docker.sock:/var/run/docker.sock # For spawning sibling containers
 
   # 6. Frontend
   frontend:
