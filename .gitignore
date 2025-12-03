@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+.DS_Store
+auth/data
+db_data
+.next
+coverage

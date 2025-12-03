@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  # 1. Gateway Service
+  gateway:
+    image: node:18-alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8080:8080"
+    networks:
+      - public_net
+      - service_net
+    environment:
+      - PORT=8080
+    volumes:
+      - ./gateway:/app
+
+  # 2. Auth Service (Keycloak)
+  auth:
+    image: quay.io/keycloak/keycloak:22.0.0
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - "8081:8080"
+    networks:
+      - public_net
+      - service_net
+    volumes:
+      - ./auth/data:/opt/keycloak/data
+
+  # 3. User Service
+  users:
+    image: node:18-alpine
+    deploy:
+      replicas: 1
+    networks:
+      - service_net
+      - db_net
+    volumes:
+      - ./users:/app
+
+  # 4. Challenges Service
+  challenges:
+    image: node:18-alpine
+    deploy:
+      replicas: 1
+    networks:
+      - service_net
+      - db_net
+    volumes:
+      - ./challenges:/app
+
+  # 5. Sandbox Runner Service (Replicated)
+  sandbox-runner:
+    image: node:18-alpine
+    deploy:
+      replicas: 2
+    networks:
+      - service_net
+      - broker_net
+      - db_net
+    volumes:
+      - ./sandbox-runner:/app
+      - /var/run/docker.sock:/var/run/docker.sock # For spawning sibling containers
+
+  # 6. Frontend
+  frontend:
+    image: node:18-alpine
+    deploy:
+      replicas: 1
+    ports:
+      - "3000:3000"
+    networks:
+      - public_net
+    volumes:
+      - ./frontend:/app
+
+  # 7. Database (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=coding_challenges
+    networks:
+      - db_net
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  # 8. Broker (RabbitMQ)
+  broker:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672" # Management UI
+      - "5672:5672"
+    networks:
+      - broker_net
+
+  # 9. Redis (for Rate Limiting)
+  redis:
+    image: redis:7-alpine
+    networks:
+      - service_net
+
+networks:
+  public_net:
+    driver: overlay
+  service_net:
+    driver: overlay
+    internal: true
+  db_net:
+    driver: overlay
+    internal: true
+  broker_net:
+    driver: overlay
+    internal: true
+
+volumes:
+  db_data:
