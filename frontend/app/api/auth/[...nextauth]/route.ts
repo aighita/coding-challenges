@@ -1,7 +1,8 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
+import { JWT } from "next-auth/jwt";
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
     providers: [
         KeycloakProvider({
             clientId: process.env.KEYCLOAK_CLIENT_ID || "frontend-client",
@@ -19,17 +20,23 @@ export const authOptions = {
         },
         async session({ session, token }) {
             session.accessToken = token.accessToken;
-            session.user.id = token.sub;
+            if (session.user) {
+                session.user.id = token.sub as string;
+            }
             return session;
         },
     },
     events: {
-        async signOut({ token }) {
+        async signOut({ token }: { token: JWT }) {
             if (token.idToken) {
                 const issuerUrl = process.env.KEYCLOAK_ISSUER || "http://localhost:8081/realms/coding-challenges";
                 const logOutUrl = new URL(`${issuerUrl}/protocol/openid-connect/logout`);
                 logOutUrl.searchParams.set("id_token_hint", token.idToken);
-                await fetch(logOutUrl);
+                try {
+                    await fetch(logOutUrl.toString());
+                } catch (error) {
+                    console.error("Error logging out from Keycloak", error);
+                }
             }
         }
     }
