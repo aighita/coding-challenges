@@ -8,6 +8,12 @@ export const authOptions: AuthOptions = {
             clientId: process.env.KEYCLOAK_CLIENT_ID || "frontend-client",
             clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
             issuer: process.env.KEYCLOAK_ISSUER || "http://localhost:8081/realms/coding-challenges",
+            authorization: {
+                params: {
+                    scope: "openid email profile",
+                },
+                url: `${process.env.KEYCLOAK_EXTERNAL_ISSUER || "http://localhost:8081/realms/coding-challenges"}/protocol/openid-connect/auth`,
+            },
         }),
     ],
     callbacks: {

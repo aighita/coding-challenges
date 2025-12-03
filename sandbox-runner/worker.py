@@ -58,62 +58,49 @@ def execute_code(code, tests):
                 input=input_data.encode(),
                 capture_output=True,
                 timeout=5 # 5 seconds timeout
-            )
-            
-            output = result.stdout.decode().strip()
-            error = result.stderr.decode().strip()
-            
-            if result.returncode != 0:
-                verdict = "RUNTIME_ERROR"
-                logs.append(f"Error: {error}")
-                break
-            
-            if output != expected_output:
-                verdict = "FAILED"
-                logs.append(f"Input: {input_data}\nExpected: {expected_output}\nGot: {output}")
-                break
+
+    try:
+        for i, test in enumerate(tests):
+            input_data = test['input']
+            expected_output = test['output'].strip()
+
+            try:
+                if language == 'python':
+                    result = subprocess.run(['python3', filename], input=input_data.encode(), capture_output=True, timeout=5)
+                elif language == 'cpp':
+                    result = subprocess.run([f'./{executable_name}'], input=input_data.encode(), capture_output=True, timeout=5)
                 
-    except subprocess.TimeoutExpired:
-        verdict = "TLE" # Time Limit Exceeded
-        logs.append("Time Limit Exceeded")
-    except Exception as e:
-        verdict = "SYSTEM_ERROR"
-        logs.append(str(e))
+                if result.returncode != 0:
+                    verdict = "RUNTIME_ERROR"
+                    logs.append(f"Test case {i+1} failed with runtime error: {result.stderr.decode()}")
+                    break
+                
+                actual_output = result.stdout.decode().strip()
+                if actual_output != expected_output:
+                    verdict = "WRONG_ANSWER"
+                    logs.append(f"Test case {i+1} failed. Input: '{input_data}', Expected: '{expected_output}', Got: '{actual_output}'")
+                    break
+            except subprocess.TimeoutExpired:
+                verdict = "TIME_LIMIT_EXCEEDED"
+                logs.append(f"Test case {i+1} timed out.")
+                break
+            except Exception as e:
+                verdict = "SYSTEM_ERROR"
+                logs.append(f"An unexpected error occurred during test case {i+1}: {str(e)}")
+                break
     finally:
         if os.path.exists(filename):
             os.remove(filename)
+        if language == 'cpp' and os.path.exists(executable_name):
+            os.remove(executable_name)
             
-    return verdict, "\n".join(logs)
+    return verdict, "\n".join(logs) if logs else "All test cases passed."
 
 def callback(ch, method, properties, body):
     print(" [x] Received job")
     data = json.loads(body)
     submission_id = data['submissionId']
     code = data['code']
-    tests = data.get('tests', [])
-    
-    print(f"Processing submission {submission_id}")
-    
-    # Update status to RUNNING
-    conn = get_db_connection()
-    if conn:
-        cur = conn.cursor()
-        cur.execute(
-            'UPDATE "Submission" SET status = %s, "updatedAt" = NOW() WHERE id = %s',
-            ('RUNNING', submission_id)
-        )
-        conn.commit()
-        cur.close()
-        conn.close()
-    
-    # Execute
-    verdict, output = execute_code(code, tests)
-    
-    # Update status to COMPLETED/FAILED
-    conn = get_db_connection()
-    if conn:
-        cur = conn.cursor()
-        cur.execute(
             'UPDATE "Submission" SET status = %s, verdict = %s, output = %s, "updatedAt" = NOW() WHERE id = %s',
             ('COMPLETED', verdict, output, submission_id)
         )

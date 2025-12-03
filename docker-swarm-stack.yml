@@ -35,7 +35,7 @@ services:
       - public_net
       - service_net
     volumes:
-      - ./auth/data:/opt/keycloak/data
+      - keycloak_data:/opt/keycloak/data
       - ./auth/realm.json:/opt/keycloak/data/import/realm.json
 
   # 3. User Service
@@ -88,7 +88,8 @@ services:
     environment:
       - KEYCLOAK_CLIENT_ID=frontend-client
       - KEYCLOAK_CLIENT_SECRET=
-      - KEYCLOAK_ISSUER=http://localhost:8081/realms/coding-challenges
+      - KEYCLOAK_ISSUER=http://auth:8080/realms/coding-challenges
+      - KEYCLOAK_EXTERNAL_ISSUER=http://localhost:8081/realms/coding-challenges
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=supersecret
     networks:
@@ -97,6 +98,8 @@ services:
   # 7. Database (PostgreSQL)
   db:
     image: postgres:15-alpine
+    deploy:
+      replicas: 1
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -106,9 +109,22 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  # 8. Broker (RabbitMQ)
+  # 8. Redis
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass redispassword
+    deploy:
+      replicas: 1
+    networks:
+      - service_net
+    volumes:
+      - redis_data:/data
+
+  # 9. Message Broker (RabbitMQ)
   broker:
     image: rabbitmq:3-management-alpine
+    deploy:
+      replicas: 1
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
@@ -117,13 +133,6 @@ services:
       - "5672:5672"
     networks:
       - broker_net
-
-  # 9. Redis (for Rate Limiting)
-  redis:
-    image: redis:7-alpine
-    command: redis-server --requirepass redispassword
-    networks:
-      - service_net
 
 networks:
   public_net:
