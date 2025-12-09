@@ -6,3 +6,5 @@ auth/data
 db_data
 .next
 coverage
+venv/
+__pycache__/

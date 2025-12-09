@@ -1,12 +1,13 @@
-version: '3.8'
-
 services:
   # 1. Gateway Service
   gateway:
     image: coding-challenges/gateway:latest
     build: ./gateway
+    command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+    volumes:
+      - ./gateway:/app
+
     deploy:
-      replicas: 1
       restart_policy:
         condition: on-failure
     ports:
@@ -29,6 +30,8 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME_URL=http://localhost:8081
+
     ports:
       - "8081:8080"
     networks:
@@ -42,8 +45,10 @@ services:
   users:
     image: coding-challenges/users:latest
     build: ./users
-    deploy:
-      replicas: 1
+    command: uvicorn main:app --host 0.0.0.0 --port 3000 --reload
+    volumes:
+      - ./users:/app
+
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
     networks:
@@ -54,21 +59,26 @@ services:
   challenges:
     image: coding-challenges/challenges:latest
     build: ./challenges
-    deploy:
-      replicas: 1
+    command: uvicorn main:app --host 0.0.0.0 --port 3000 --reload
+    volumes:
+      - ./challenges:/app
+
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
       - RABBITMQ_URL=amqp://user:password@broker:5672
     networks:
       - service_net
       - db_net
+      - broker_net
 
   # 5. Sandbox Runner Service (Replicated)
   sandbox-runner:
     image: coding-challenges/sandbox-runner:latest
     build: ./sandbox-runner
     deploy:
-      replicas: 2
+      replicas: 3
+    volumes:
+      - ./sandbox-runner:/app
     environment:
       - RABBITMQ_URL=amqp://user:password@broker:5672
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
@@ -149,3 +159,5 @@ networks:
 
 volumes:
   db_data:
+  redis_data:
+  keycloak_data:
