@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import CodeEditor from '@/components/CodeEditor';
 
 interface Challenge {
     id: string;
@@ -109,12 +110,12 @@ export default function ChallengeDetailPage() {
             <div>
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">Code Solution (Python)</label>
-                    <textarea
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        className="w-full h-96 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 border rounded focus:ring-2 focus:ring-blue-500"
-                        spellCheck={false}
-                    />
+                    <div className="h-96">
+                        <CodeEditor
+                            code={code}
+                            onChange={(value) => setCode(value || '')}
+                        />
+                    </div>
                 </div>
                 <button
                     onClick={handleSubmit}

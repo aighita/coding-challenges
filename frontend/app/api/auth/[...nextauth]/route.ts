@@ -1,6 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import { JWT } from "next-auth/jwt";
+import { jwtDecode } from "jwt-decode";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -21,11 +22,21 @@ export const authOptions: AuthOptions = {
             if (account) {
                 token.accessToken = account.access_token;
                 token.idToken = account.id_token;
+
+                try {
+                    if (account.access_token) {
+                        const decoded: any = jwtDecode(account.access_token);
+                        token.roles = decoded.realm_access?.roles || [];
+                    }
+                } catch (error) {
+                    console.error("Error decoding token for roles", error);
+                }
             }
             return token;
         },
         async session({ session, token }) {
             session.accessToken = token.accessToken;
+            session.roles = token.roles;
             if (session.user) {
                 session.user.id = token.sub as string;
             }
