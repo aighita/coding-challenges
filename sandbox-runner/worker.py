@@ -150,7 +150,7 @@ def main():
             channel.queue_declare(queue='submissions', durable=True)
             channel.basic_qos(prefetch_count=1)
             channel.basic_consume(queue='submissions', on_message_callback=callback)
-            
+
             print(' [*] Waiting for messages. To exit press CTRL+C')
             try:
                 channel.start_consuming()

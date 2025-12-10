@@ -26,12 +26,9 @@ export default function ChallengesPage() {
     const [difficultyFilter, setDifficultyFilter] = useState('All');
 
     useEffect(() => {
-        // In a real app, this would call the Gateway URL
-        // For now, we assume the frontend can access the gateway via localhost:8080 if running locally
-        // Or we configure a proxy in next.config.js
+        // TODO: In a real app, this would call the Gateway URL not hardcoded
         const fetchChallenges = async () => {
             try {
-                // Assuming Gateway is at localhost:8080
                 const response = await axios.get('http://localhost:8080/challenges');
                 setChallenges(response.data);
             } catch (error) {
