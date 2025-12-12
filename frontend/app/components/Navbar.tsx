@@ -39,12 +39,14 @@ export default function Navbar() {
                             </Button>
                         </div>
                     ) : (
-                        <Button
-                            size="sm"
-                            onClick={() => signIn('keycloak')}
-                        >
-                            Sign In
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" asChild>
+                                <Link href="/login">Sign In</Link>
+                            </Button>
+                            <Button size="sm" asChild>
+                                <Link href="/register">Sign Up</Link>
+                            </Button>
+                        </div>
                     )}
                 </div>
             </div>

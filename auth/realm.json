@@ -1,6 +1,7 @@
 {
   "realm": "coding-challenges",
   "enabled": true,
+  "loginWithEmailAllowed": true,
   "roles": {
     "realm": [
       {
@@ -30,7 +31,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["admin"]
+      "realmRoles": [
+        "admin"
+      ]
     },
     {
       "username": "student",
@@ -44,7 +47,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["student"]
+      "realmRoles": [
+        "student"
+      ]
     },
     {
       "username": "editor",
@@ -58,7 +63,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["editor"]
+      "realmRoles": [
+        "editor"
+      ]
     }
   ],
   "clients": [
@@ -66,8 +73,13 @@
       "clientId": "frontend-client",
       "enabled": true,
       "publicClient": true,
-      "redirectUris": ["http://localhost:3000/*"],
-      "webOrigins": ["http://localhost:3000"]
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ]
     },
     {
       "clientId": "backend-client",
