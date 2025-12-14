@@ -1,4 +1,11 @@
-# Distributed Coding Challenges Platform
+<div align="center">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+    <img src="assets/coding-animation.svg" width="100" height="100" />
+    <h1>Coding Challenges</h1>
+  </div>
+</div>
+
+## 👾 Distributed Platform
 
 A scalable, microservices-based platform for running and evaluating coding challenges. This project leverages Docker Swarm for orchestration, Keycloak for authentication, and a modern frontend built with Next.js.
 
