@@ -51,6 +51,10 @@ services:
 
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/coding_challenges
+      - KEYCLOAK_SERVER_URL=http://auth:8080/
+      - KEYCLOAK_REALM=coding-challenges
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
     networks:
       - service_net
       - db_net
@@ -91,6 +95,11 @@ services:
   frontend:
     image: coding-challenges/frontend:latest
     build: ./frontend
+    command: npm run dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
     deploy:
       replicas: 1
     ports:

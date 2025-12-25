@@ -32,3 +32,15 @@ else
     echo "Error: Could not find challenges container to seed database."
     echo "Please run 'docker ps' to check if services are running."
 fi
+
+echo "Seeding users..."
+USERS_CONTAINER_ID=$(docker ps -q -f name=coding-challenges_users | head -n 1)
+
+if [ -n "$USERS_CONTAINER_ID" ]; then
+    echo "Found users container: $USERS_CONTAINER_ID"
+    docker exec $USERS_CONTAINER_ID python seed.py
+    echo "Users seeded successfully."
+else
+    echo "Error: Could not find users container to seed users."
+fi
+
