@@ -65,9 +65,19 @@ async def get_rabbitmq():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables
-    async with database.engine.begin() as conn:
-        await conn.run_sync(database.Base.metadata.create_all)
+    # Create tables with retry
+    import asyncio
+    retries = 10
+    while retries > 0:
+        try:
+            async with database.engine.begin() as conn:
+                await conn.run_sync(database.Base.metadata.create_all)
+            print("Database connected and tables created.")
+            break
+        except Exception as e:
+            print(f"Database connection failed: {e}. Retrying in 5s...")
+            retries -= 1
+            await asyncio.sleep(5)
     
     await get_rabbitmq()
     yield
