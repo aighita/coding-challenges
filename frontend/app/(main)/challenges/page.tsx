@@ -29,7 +29,7 @@ export default function ChallengesPage() {
         // TODO: In a real app, this would call the Gateway URL not hardcoded
         const fetchChallenges = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/challenges');
+                const response = await axios.get('/api/proxy/challenges');
                 setChallenges(response.data);
             } catch (error) {
                 console.error('Error fetching challenges:', error);

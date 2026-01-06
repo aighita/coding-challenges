@@ -42,7 +42,7 @@ export default function ChallengeDetailPage() {
 
     const fetchChallenge = async (id: string) => {
         try {
-            const response = await axios.get(`http://localhost:8080/challenges/${id}`);
+            const response = await axios.get(`/api/proxy/challenges/${id}`);
             setChallenge(response.data);
             setCode(response.data.template);
         } catch (error) {
@@ -52,7 +52,7 @@ export default function ChallengeDetailPage() {
 
     const fetchSubmissions = async (id: string) => {
         try {
-            const response = await axios.get(`http://localhost:8080/challenges/${id}/submissions`, {
+            const response = await axios.get(`/api/proxy/challenges/${id}/submissions`, {
                 headers: { Authorization: `Bearer ${session?.accessToken}` }
             });
             setSubmissions(response.data);
@@ -69,7 +69,7 @@ export default function ChallengeDetailPage() {
 
         setLoading(true);
         try {
-            await axios.post(`http://localhost:8080/challenges/${params.id}/submit`,
+            await axios.post(`/api/proxy/challenges/${params.id}/submit`,
                 { code },
                 { headers: { Authorization: `Bearer ${session.accessToken}` } }
             );

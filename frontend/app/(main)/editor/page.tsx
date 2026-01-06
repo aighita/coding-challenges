@@ -22,7 +22,7 @@ export default function EditorPage() {
     const [loading, setLoading] = useState(false);
 
     // simple protection check
-    if (session && !session.roles?.includes('editor')) {
+    if (session && !session.roles?.includes('editor') && !session.roles?.includes('admin')) {
         return <div className="p-8">Access Denied: You do not have permission to view this page.</div>;
     }
 
@@ -40,7 +40,7 @@ export default function EditorPage() {
                 return;
             }
 
-            await axios.post('http://localhost:8080/challenges', {
+            await axios.post('/api/proxy/challenges', {
                 title,
                 description,
                 template,
@@ -51,7 +51,7 @@ export default function EditorPage() {
             });
 
             toast.success('Challenge created successfully!');
-            router.push('/challenges');
+            router.push('/challenges'); 
         } catch (error) {
             console.error(error);
             toast.error('Failed to create challenge');

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Terminal Background -->
+  <rect x="20" y="40" width="160" height="120" rx="10" ry="10" fill="#1e1e1e" />
+  
+  <!-- Terminal Header -->
+  <rect x="20" y="40" width="160" height="25" rx="10" ry="10" fill="#2d2d2d" />
+  <rect x="20" y="55" width="160" height="10" fill="#2d2d2d" /> <!-- Cover bottom radius of header -->
+  
+  <!-- Window Buttons -->
+  <circle cx="35" cy="52.5" r="4" fill="#ff5f56" />
+  <circle cx="50" cy="52.5" r="4" fill="#ffbd2e" />
+  <circle cx="65" cy="52.5" r="4" fill="#27c93f" />
+
+  <!-- Code Lines -->
+  <g>
+    <!-- Line 1 -->
+    <rect x="35" y="80" width="0" height="8" rx="2" fill="#61dafb">
+      <animate attributeName="width" values="0;40;40;40" keyTimes="0;0.1;0.9;1" dur="2s" repeatCount="indefinite" />
+    </rect>
+    <rect x="80" y="80" width="0" height="8" rx="2" fill="#c586c0">
+      <animate attributeName="width" values="0;0;50;50" keyTimes="0;0.1;0.2;1" dur="2s" repeatCount="indefinite" />
+    </rect>
+
+    <!-- Line 2 -->
+    <rect x="35" y="100" width="0" height="8" rx="2" fill="#ce9178">
+      <animate attributeName="width" values="0;0;20;20" keyTimes="0;0.2;0.3;1" dur="2s" repeatCount="indefinite" />
+    </rect>
+    <rect x="60" y="100" width="0" height="8" rx="2" fill="#dcdcaa">
+      <animate attributeName="width" values="0;0;60;60" keyTimes="0;0.3;0.4;1" dur="2s" repeatCount="indefinite" />
+    </rect>
+
+    <!-- Line 3 -->
+    <rect x="35" y="120" width="0" height="8" rx="2" fill="#4ec9b0">
+      <animate attributeName="width" values="0;0;30;30" keyTimes="0;0.4;0.5;1" dur="2s" repeatCount="indefinite" />
+    </rect>
+    <rect x="70" y="120" width="0" height="8" rx="2" fill="#569cd6">
+      <animate attributeName="width" values="0;0;40;40" keyTimes="0;0.5;0.6;1" dur="2s" repeatCount="indefinite" />
+    </rect>
+    
+    <!-- Cursor Blinking -->
+    <rect x="35" y="140" width="8" height="8" fill="#d4d4d4">
+      <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" />
+      <animate attributeName="x" values="35;115" keyTimes="0;1" dur="2s" repeatCount="indefinite" calcMode="discrete" /> 
+      <!-- Simplified cursor movement logic for visual effect -->
+    </rect>
+  </g>
+</svg>
