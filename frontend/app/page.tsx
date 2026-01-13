@@ -1,181 +1,353 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Code2, Globe, Cpu, ShieldCheck, Terminal, Server, Users, Zap, Lock, CheckCircle2 } from 'lucide-react';
+import { Code2, Database, ShieldCheck, Terminal, Server, Users, ArrowRight, ArrowDown, Lock, Layers, MessageSquare, CheckCircle } from 'lucide-react';
 import ColorBends from '@/components/ColorBends';
-import { cn } from '@/lib/utils';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-[#020202] text-foreground overflow-x-hidden selection:bg-indigo-500/30">
-      {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-start min-h-screen pt-32 pb-20 px-4 text-center overflow-hidden">
-        {/* Background Effect */}
-        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-          <ColorBends
-            colors={["#ff5c7a", "#8a5cff", "#00ffd1"]}
-            rotation={30}
-            speed={0.3}
-            scale={0.5}
-            frequency={1.4}
-            warpStrength={1.2}
-            mouseInfluence={0.8}
-            parallax={0.6}
-            noise={0.08}
-            transparent
-          />
-          {/* Vignette for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
-        </div>
+      
+      {/* Background Effect */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <ColorBends
+          colors={["#4f46e5", "#7c3aed", "#06b6d4"]}
+          rotation={20}
+          speed={0.2}
+          scale={0.4}
+          frequency={1.2}
+          warpStrength={0.8}
+          mouseInfluence={0.3}
+          parallax={0.4}
+          noise={0.05}
+          transparent
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020202]/90 via-[#020202]/70 to-[#020202]/95" />
+      </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center max-w-6xl mx-auto w-full mt-20">
-          
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-white max-w-4xl mx-auto leading-tight">
-            Master Algorithms with{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 animate-gradient-x">
-              Distributed Computing
-            </span>
+      {/* Header Section */}
+      <section className="relative z-10 pt-60 pb-20 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl md:text-4xl font-bold tracking-tight mb-6 text-white leading-tight">
+            Distributed Coding Challenge Platform
           </h1>
-
-          <p className="max-w-2xl mx-auto mb-8 text-lg text-gray-400 leading-relaxed px-4">
-            A scalable, distributed platform for coding challenges. Run your code in isolated sandboxes, compete with peers, and improve your skills in realtime.
+          
+          <p className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-6">
+            A microservices-based architecture for executing and evaluating code submissions 
+            in isolated sandbox environments. Built with Docker Swarm for orchestration and scalability.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-20 w-full sm:w-auto">
-            <Link href="/challenges" className="w-full sm:w-auto">
-              <Button size="lg" className="h-12 px-8 w-full sm:w-auto text-base bg-white text-black hover:bg-gray-200 border-0 rounded-full font-medium transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]">
-                Start Coding
-              </Button>
-            </Link>
-            <div className="flex gap-4 w-full sm:w-auto">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="h-12 w-full sm:w-auto px-8 text-base border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent rounded-full backdrop-blur-sm transition-all hover:scale-105 active:scale-95">
-                  View Demo
-                </Button>
-              </Link>
-            </div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+            <Layers className="w-4 h-4 text-indigo-400" />
+            <span className="text-sm text-gray-400">Distributed Systems Project</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Architecture Overview */}
+      <section className="relative z-10 py-4 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">System Architecture</h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              The platform consists of multiple microservices communicating through an API Gateway, 
+              with RabbitMQ handling asynchronous task distribution.
+            </p>
           </div>
 
-          {/* Diagram Section */}
-          <div className="relative w-full max-w-5xl mx-auto perspective-[1000px]">
-             {/* Large connecting lines SVG - Visible on Desktop */}
-             <svg className="absolute top-1/2 left-0 w-full h-[400px] -translate-y-1/2 -z-10 hidden md:block opacity-40 pointer-events-none stroke-white/10" preserveAspectRatio="none">
-               {/* Left to Center */}
-               <path d="M 250,200 C 400,200 400,200 562,200" fill="none" strokeWidth="2" strokeDasharray="8 8" className="animate-[dash_30s_linear_infinite]" />
-               {/* Center to Right */}
-               <path d="M 562,200 C 700,200 700,200 874,200" fill="none" strokeWidth="2" strokeDasharray="8 8" className="animate-[dash_30s_linear_infinite]" />
-             </svg>
+          {/* Architecture Diagram */}
+          <div className="relative">
+            {/* Flow Arrows for Desktop */}
+            <div className="hidden lg:block absolute inset-0 pointer-events-none">
+              <svg className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                {/* User to Gateway */}
+                <path d="M 200,120 L 200,180" fill="none" stroke="rgba(99,102,241,0.3)" strokeWidth="2" strokeDasharray="6 4" />
+                {/* Gateway to Services */}
+                <path d="M 140,280 L 80,340" fill="none" stroke="rgba(99,102,241,0.3)" strokeWidth="2" strokeDasharray="6 4" />
+                <path d="M 200,280 L 200,340" fill="none" stroke="rgba(99,102,241,0.3)" strokeWidth="2" strokeDasharray="6 4" />
+                <path d="M 260,280 L 320,340" fill="none" stroke="rgba(99,102,241,0.3)" strokeWidth="2" strokeDasharray="6 4" />
+              </svg>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 items-center px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
-              {/* Left Column: Developers */}
-              <div className="flex flex-col gap-6 relative group md:translate-y-12 transition-transform duration-500 hover:translate-y-8">
-                {/* Floating Stats Pill */}
-                <div className="absolute -top-10 -left-2 bg-[#121214] border border-white/10 rounded-full py-2 px-4 flex items-center gap-3 shadow-2xl transform transition-transform hover:-translate-y-1 z-20">
-                    <div className="flex -space-x-2">
-                         {[1,2,3].map(i => (
-                             <div key={i} className={`w-5 h-5 rounded-full border border-[#121214] bg-gradient-to-br from-blue-500 to-purple-500`} />
-                         ))}
-                    </div>
-                     <span className="text-xs font-medium text-gray-300">1.2k+ Peers</span>
-                </div>
-
-                <Card className="bg-[#0c0c0e] border-white/10 shadow-2xl overflow-hidden relative group/card hover:border-white/20 transition-colors">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                    <div className="p-5 relative">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
-                            <h3 className="font-semibold text-white/90 text-sm tracking-wide">ACTIVE CHALLENGERS</h3>
-                        </div>
-                        <div className="space-y-2">
-                           {[1,2,3].map((i) => (
-                               <div key={i} className="flex items-center gap-3 bg-white/5 p-2 rounded-md border border-white/5 hover:bg-white/10 transition-colors">
-                                   <Avatar className="w-6 h-6 rounded-full border border-white/10">
-                                       <AvatarFallback className="bg-gradient-to-br from-indigo-600 to-purple-600 text-[8px] text-white">U{i}</AvatarFallback>
-                                   </Avatar>
-                                   <div className="flex flex-col gap-1.5 w-full">
-                                       <div className="h-1.5 w-16 bg-white/20 rounded-full"></div>
-                                       <div className="h-1.5 w-10 bg-white/10 rounded-full"></div>
-                                   </div>
-                               </div>
-                           ))}
-                        </div>
-                    </div>
-                </Card>
-              </div>
-
-              {/* Center Column: Core Platform */}
-              <div className="flex flex-col items-center justify-center relative z-10">
-                <div className="relative w-40 h-40 flex items-center justify-center group cursor-pointer">
-                    <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-[50px] animate-pulse-slow group-hover:bg-indigo-500/30 transition-all duration-500"></div>
-                    <div className="relative w-28 h-28 bg-[#0c0c0e] border border-white/20 rounded-2xl shadow-[0_0_30px_-5px_rgba(99,102,241,0.3)] flex flex-col items-center justify-center z-10 transform transition-transform group-hover:scale-105 duration-500 gap-2">
-                         <div className="p-2 bg-indigo-500/10 rounded-lg">
-                             <Server className="w-8 h-8 text-indigo-400" /> 
-                         </div>
-                         <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-200/50">Gateway</span>
-                    </div>
-                    
-                    {/* Orbiting Elements */}
-                    <div className="absolute inset-0 animate-spin-slow opacity-60">
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#0c0c0e] border border-white/10 p-2 rounded-full shadow-lg">
-                            <Code2 className="w-4 h-4 text-indigo-400" />
-                        </div>
-                    </div>
-                    <div className="absolute inset-0 animate-spin-reverse-slow opacity-60">
-                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-[#0c0c0e] border border-white/10 p-2 rounded-full shadow-lg">
-                            <Globe className="w-4 h-4 text-purple-400" />
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="mt-10 bg-[#0c0c0e] border border-white/10 px-6 py-2 rounded-full flex items-center gap-2 shadow-xl">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
-                    <span className="text-xs font-medium text-gray-300 tracking-wide">Load Balancing</span>
-                </div>
-              </div>
-
-              {/* Right Column: Execution */}
-              <div className="flex flex-col gap-6 relative group md:translate-y-12 transition-transform duration-500 hover:translate-y-8">
-                 {/* Floating Security Pill */}
-                 <div className="absolute -bottom-8 -right-2 bg-[#121214] border border-white/10 rounded-full py-2 px-4 flex items-center gap-3 shadow-2xl transform transition-transform hover:translate-y-1 z-20">
-                    <div className="p-1 rounded-full bg-emerald-500/20">
-                        <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              {/* Left Column - Client & Gateway */}
+              <div className="lg:col-span-1 space-y-6">
+                {/* Frontend Client */}
+                <Card className="bg-[#0c0c0e] border-white/10 p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                      <Users className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
-                        <div className="text-[10px] text-gray-400 uppercase font-bold tracking-wider leading-none mb-0.5">Sandbox</div>
-                        <div className="text-xs font-bold text-white leading-none">Secure Env</div>
+                      <h3 className="font-semibold text-white">Frontend Client</h3>
+                      <p className="text-xs text-gray-500">Next.js Application</p>
                     </div>
+                  </div>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    React-based web interface where users browse challenges, write code in the integrated editor, 
+                    and submit solutions for evaluation.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="text-xs px-2 py-1 rounded bg-white/5 text-gray-400">Next.js 14</span>
+                    <span className="text-xs px-2 py-1 rounded bg-white/5 text-gray-400">TypeScript</span>
+                    <span className="text-xs px-2 py-1 rounded bg-white/5 text-gray-400">TailwindCSS</span>
+                  </div>
+                </Card>
+
+                <div className="flex justify-center lg:hidden">
+                  <ArrowDown className="w-6 h-6 text-indigo-400/50" />
                 </div>
 
-                <Card className="bg-[#0c0c0e] border-white/10 shadow-2xl overflow-hidden relative group/card hover:border-white/20 transition-colors">
-                    <div className="absolute inset-0 bg-gradient-to-bl from-emerald-500/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                    <div className="p-5 relative">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-semibold text-white/90 text-sm tracking-wide">EXECUTION NODES</h3>
-                            <div className="flex gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50"></span>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                           {['sw-10', 'sw-20', 'sw-30'].map((id) => (
-                               <div key={id} className="flex items-center justify-between bg-white/5 p-2 rounded-md border border-white/5 group/item hover:bg-white/10 transition-colors">
-                                   <div className="flex items-center gap-3">
-                                       <Terminal className="w-3.5 h-3.5 text-gray-500 group-hover/item:text-gray-300 transition-colors" />
-                                       <span className="text-xs font-mono text-gray-400 group-hover/item:text-gray-200 transition-colors">node-{id}</span>
-                                   </div>
-                                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover/item:bg-emerald-400 transition-colors"></div>
-                               </div>
-                           ))}
-                        </div>
+                {/* API Gateway */}
+                <Card className="bg-[#0c0c0e] border-indigo-500/30 p-6 ring-1 ring-indigo-500/20">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                      <Server className="w-6 h-6 text-indigo-400" />
                     </div>
+                    <div>
+                      <h3 className="font-semibold text-white">API Gateway</h3>
+                      <p className="text-xs text-gray-500">FastAPI Service</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Central entry point that routes incoming requests to appropriate microservices. 
+                    Handles authentication validation and request forwarding.
+                  </p>
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <CheckCircle className="w-3 h-3 text-indigo-400" />
+                      <span>Request routing & load balancing</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <CheckCircle className="w-3 h-3 text-indigo-400" />
+                      <span>JWT token validation</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <CheckCircle className="w-3 h-3 text-indigo-400" />
+                      <span>Service discovery</span>
+                    </div>
+                  </div>
                 </Card>
               </div>
 
+              {/* Center Column - Microservices */}
+              <div className="lg:col-span-1 space-y-6">
+                <div className="text-center mb-4 lg:hidden">
+                  <ArrowDown className="w-6 h-6 text-indigo-400/50 mx-auto" />
+                </div>
+                
+                <h4 className="text-xs uppercase tracking-wider text-gray-500 text-center font-semibold mb-4">
+                  Microservices Layer
+                </h4>
+
+                {/* Users Service */}
+                <Card className="bg-[#0c0c0e] border-white/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 rounded-lg bg-purple-500/10">
+                      <Users className="w-5 h-5 text-purple-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-white text-sm">Users Service</h3>
+                      <p className="text-xs text-gray-500">User management & profiles</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Manages user data, profiles, and submission history. Stores data in PostgreSQL.
+                  </p>
+                </Card>
+
+                {/* Challenges Service */}
+                <Card className="bg-[#0c0c0e] border-white/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10">
+                      <Code2 className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-white text-sm">Challenges Service</h3>
+                      <p className="text-xs text-gray-500">Problem repository</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Stores and serves coding challenges with test cases, descriptions, and metadata.
+                  </p>
+                </Card>
+
+                {/* Auth Service */}
+                <Card className="bg-[#0c0c0e] border-white/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/10">
+                      <Lock className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-white text-sm">Auth Service</h3>
+                      <p className="text-xs text-gray-500">Keycloak Identity Provider</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Handles authentication via OAuth 2.0 / OpenID Connect. Issues and validates JWT tokens.
+                  </p>
+                </Card>
+              </div>
+
+              {/* Right Column - Execution Pipeline */}
+              <div className="lg:col-span-1 space-y-6">
+                <h4 className="text-xs uppercase tracking-wider text-gray-500 text-center font-semibold mb-4">
+                  Execution Pipeline
+                </h4>
+
+                {/* Message Queue */}
+                <Card className="bg-[#0c0c0e] border-orange-500/30 p-5 ring-1 ring-orange-500/20">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 rounded-lg bg-orange-500/10">
+                      <MessageSquare className="w-5 h-5 text-orange-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-white text-sm">RabbitMQ</h3>
+                      <p className="text-xs text-gray-500">Message Broker</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Distributes code execution tasks to available sandbox workers using task queues for async processing.
+                  </p>
+                </Card>
+
+                <div className="flex justify-center">
+                  <ArrowDown className="w-5 h-5 text-orange-400/50" />
+                </div>
+
+                {/* Sandbox Runner */}
+                <Card className="bg-[#0c0c0e] border-emerald-500/30 p-6 ring-1 ring-emerald-500/20">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                      <Terminal className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white">Sandbox Runner</h3>
+                      <p className="text-xs text-gray-500">Isolated Execution Environment</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                    Worker processes that execute user code in isolated Docker containers with resource limits and security constraints.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                      <span>Container isolation</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                      <span>CPU & memory limits</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                      <span>Execution timeout</span>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Workflow Section */}
+      <section className="relative z-10 py-16 px-4 border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Code Submission Workflow</h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              Step-by-step flow of how a code submission is processed through the system.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Step 1 */}
+            <div className="relative">
+              <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-bold text-white z-10">
+                1
+              </div>
+              <Card className="bg-[#0c0c0e] border-white/10 p-5 h-full">
+                <h3 className="font-semibold text-white mb-2 mt-2">Submit Code</h3>
+                <p className="text-sm text-gray-400">
+                  User writes solution in the web-based code editor and submits for evaluation.
+                </p>
+              </Card>
+              <div className="hidden lg:flex absolute top-1/2 -right-3 transform -translate-y-1/2">
+                <ArrowRight className="w-6 h-6 text-white/20" />
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative">
+              <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-bold text-white z-10">
+                2
+              </div>
+              <Card className="bg-[#0c0c0e] border-white/10 p-5 h-full">
+                <h3 className="font-semibold text-white mb-2 mt-2">Gateway Routes</h3>
+                <p className="text-sm text-gray-400">
+                  API Gateway validates the request and publishes a task to the RabbitMQ queue.
+                </p>
+              </Card>
+              <div className="hidden lg:flex absolute top-1/2 -right-3 transform -translate-y-1/2">
+                <ArrowRight className="w-6 h-6 text-white/20" />
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative">
+              <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-bold text-white z-10">
+                3
+              </div>
+              <Card className="bg-[#0c0c0e] border-white/10 p-5 h-full">
+                <h3 className="font-semibold text-white mb-2 mt-2">Sandbox Executes</h3>
+                <p className="text-sm text-gray-400">
+                  A worker picks up the task and runs the code in an isolated container against test cases.
+                </p>
+              </Card>
+              <div className="hidden lg:flex absolute top-1/2 -right-3 transform -translate-y-1/2">
+                <ArrowRight className="w-6 h-6 text-white/20" />
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="relative">
+              <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-sm font-bold text-white z-10">
+                4
+              </div>
+              <Card className="bg-[#0c0c0e] border-white/10 p-5 h-full">
+                <h3 className="font-semibold text-white mb-2 mt-2">Results Returned</h3>
+                <p className="text-sm text-gray-400">
+                  Execution results are stored and returned to the user with pass/fail status.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Technology Stack */}
+      <section className="relative z-10 py-16 px-4 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Technology Stack</h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { name: 'Docker Swarm', desc: 'Orchestration' },
+              { name: 'FastAPI', desc: 'Backend APIs' },
+              { name: 'Next.js', desc: 'Frontend' },
+              { name: 'PostgreSQL', desc: 'Database' },
+              { name: 'RabbitMQ', desc: 'Message Queue' },
+              { name: 'Keycloak', desc: 'Auth Provider' },
+              { name: 'Python', desc: 'Services' },
+              { name: 'TypeScript', desc: 'Frontend' },
+            ].map((tech) => (
+              <div key={tech.name} className="bg-white/5 border border-white/10 rounded-lg p-4 text-center hover:bg-white/10 transition-colors">
+                <div className="font-medium text-white text-sm">{tech.name}</div>
+                <div className="text-xs text-gray-500 mt-1">{tech.desc}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

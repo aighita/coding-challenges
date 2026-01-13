@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Code2, ChevronRight, Search } from 'lucide-react';
 
 interface Challenge {
     id: string;
@@ -46,62 +46,94 @@ export default function ChallengesPage() {
         return matchesSearch && matchesDifficulty;
     });
 
-    return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold">Challenges</h1>
+    const getDifficultyColor = (difficulty: string) => {
+        switch (difficulty) {
+            case 'Easy':
+                return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+            case 'Medium':
+                return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+            case 'Hard':
+                return 'bg-red-500/10 text-red-400 border-red-500/20';
+            default:
+                return 'bg-white/5 text-gray-400 border-white/10';
+        }
+    };
 
+    return (
+        <div className="max-w-[1200px] mx-auto space-y-8">
+            {/* Header */}
+            <div className="space-y-2">
+                <h1 className="text-3xl font-bold text-white">Challenges</h1>
+                <p className="text-gray-400">Select a challenge to start coding</p>
+            </div>
+
+            {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
+                <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <Input
                         placeholder="Search challenges..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="max-w-md"
+                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-indigo-500/50 focus:ring-indigo-500/20"
                     />
                 </div>
                 <div className="w-full sm:w-48">
                     <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white focus:ring-indigo-500/20">
                             <SelectValue placeholder="Difficulty" />
                         </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="All">All Difficulties</SelectItem>
-                            <SelectItem value="Easy">Easy</SelectItem>
-                            <SelectItem value="Medium">Medium</SelectItem>
-                            <SelectItem value="Hard">Hard</SelectItem>
+                        <SelectContent className="bg-[#0c0c0e] border-white/10">
+                            <SelectItem value="All" className="text-gray-300 focus:bg-white/10 focus:text-white">All Difficulties</SelectItem>
+                            <SelectItem value="Easy" className="text-emerald-400 focus:bg-white/10 focus:text-emerald-400">Easy</SelectItem>
+                            <SelectItem value="Medium" className="text-amber-400 focus:bg-white/10 focus:text-amber-400">Medium</SelectItem>
+                            <SelectItem value="Hard" className="text-red-400 focus:bg-white/10 focus:text-red-400">Hard</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Challenges List */}
+            <div className="space-y-3">
                 {filteredChallenges.map((challenge) => (
                     <Link
                         key={challenge.id}
                         href={`/challenges/${challenge.id}`}
+                        className="group block"
                     >
-                        <Card className="h-full hover:shadow-lg transition-shadow duration-200">
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <CardTitle>{challenge.title}</CardTitle>
-                                    <Badge variant={
-                                        challenge.difficulty === 'Easy' ? 'default' :
-                                            challenge.difficulty === 'Medium' ? 'secondary' :
-                                                'destructive'
-                                    }>
-                                        {challenge.difficulty}
-                                    </Badge>
-                                </div>
-                                <CardDescription className="line-clamp-1">ID: {challenge.id}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">Click to solve this challenge.</p>
-                            </CardContent>
-                        </Card>
+                        <div className="flex items-center gap-4 p-4 rounded-xl bg-[#0c0c0e] border border-white/10 hover:border-indigo-500/30 hover:bg-white/[0.02] transition-all duration-200">
+                            {/* Icon */}
+                            <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-colors">
+                                <Code2 className="w-5 h-5 text-indigo-400" />
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-white group-hover:text-indigo-300 transition-colors truncate">
+                                    {challenge.title}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-0.5">ID: {challenge.id}</p>
+                            </div>
+
+                            {/* Difficulty Badge */}
+                            <Badge 
+                                variant="outline" 
+                                className={`${getDifficultyColor(challenge.difficulty)} border font-medium`}
+                            >
+                                {challenge.difficulty}
+                            </Badge>
+
+                            {/* Arrow */}
+                            <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                        </div>
                     </Link>
                 ))}
+                
                 {filteredChallenges.length === 0 && (
-                    <p className="col-span-full text-center text-muted-foreground py-12">No challenges found matching your criteria.</p>
+                    <div className="text-center py-16 rounded-xl border border-white/5 bg-white/[0.01]">
+                        <Code2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                        <p className="text-gray-400">No challenges found matching your criteria.</p>
+                    </div>
                 )}
             </div>
         </div>
