@@ -19,7 +19,7 @@ export default function Navbar() {
 
     const hasRole = (role: string) => session?.roles?.includes(role);
     const isAdmin = hasRole('admin');
-    const isEditor = hasRole('editor') || isAdmin;
+    const isEditor = hasRole('editor');
 
     useEffect(() => {
         if (session && userSectionRef.current) {

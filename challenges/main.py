@@ -54,14 +54,25 @@ rmq_channel = None
 
 async def get_rabbitmq():
     global rmq_connection, rmq_channel
-    if not rmq_connection or rmq_connection.is_closed:
+    if rmq_channel and not rmq_channel.is_closed:
+        return rmq_channel
+    
+    import asyncio
+    retries = 5
+    while retries > 0:
         try:
-            rmq_connection = await aio_pika.connect_robust(RABBITMQ_URL)
+            if rmq_connection is None or rmq_connection.is_closed:
+                rmq_connection = await aio_pika.connect_robust(RABBITMQ_URL)
             rmq_channel = await rmq_connection.channel()
             await rmq_channel.declare_queue("submissions", durable=True)
             print("Connected to RabbitMQ")
+            return rmq_channel
         except Exception as e:
-            print(f"RabbitMQ connection failed: {e}")
+            print(f"RabbitMQ connection failed: {e}. Retrying in 2s...")
+            retries -= 1
+            await asyncio.sleep(2)
+    print("Failed to connect to RabbitMQ after retries")
+    return None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -154,14 +165,15 @@ async def submit_solution(id: str, submission_data: SubmissionCreate, user: dict
     await db.commit()
     await db.refresh(submission)
 
-    # Publish to RabbitMQ
-    if rmq_channel:
+    # Publish to RabbitMQ - ensure connection
+    channel = await get_rabbitmq()
+    if channel:
         payload = {
             "submissionId": submission.id,
             "code": submission_data.code,
             "tests": challenge_tests
         }
-        await rmq_channel.default_exchange.publish(
+        await channel.default_exchange.publish(
             aio_pika.Message(body=json.dumps(payload).encode(), delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
             routing_key="submissions"
         )

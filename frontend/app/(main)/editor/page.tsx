@@ -21,8 +21,8 @@ export default function EditorPage() {
     const [difficulty, setDifficulty] = useState('Easy');
     const [loading, setLoading] = useState(false);
 
-    // simple protection check
-    if (session && !session.roles?.includes('editor') && !session.roles?.includes('admin')) {
+    // simple protection check - only editors can access this page
+    if (session && !session.roles?.includes('editor')) {
         return (
             <div className="max-w-[1200px] mx-auto p-8">
                 <div className="text-center py-16 rounded-xl border border-red-500/20 bg-red-500/5">
