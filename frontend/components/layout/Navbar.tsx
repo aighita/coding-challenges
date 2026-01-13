@@ -44,14 +44,14 @@ export default function Navbar() {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <div className="fixed top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none">
+        <div className="fixed top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none bg-gradient-to-b from-[#060010] to-transparent backdrop-blur-md">
             <div className="w-full pointer-events-auto">
                 {/* <Announcement /> */}
             </div>
-            <div className="flex items-center justify-between w-full px-[1rem] sm:px-[2em] md:px-[4em] h-[80px] sm:h-[120px] md:h-[160px] bg-gradient-to-b from-[#060010] to-transparent transition-all duration-300">
-                <div className="flex items-center justify-between w-full max-w-[1200px] mx-auto pointer-events-auto">
+            <div className="flex items-center justify-center w-full px-[1rem] sm:px-[2em] md:px-[4em] h-[80px] sm:h-[120px] md:h-[160px] bg-gradient-to-b from-[#060010] to-transparent transition-all duration-300">
+                <div className="grid grid-cols-3 items-center w-full max-w-[1200px] mx-auto pointer-events-auto">
                     {/* Logo Section */}
-                <div className="relative z-[2] group">
+                <div className="relative z-[2] group justify-self-start">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100px] sm:w-[160px] md:w-[200px] h-[80px] sm:h-[120px] md:h-[140px] bg-transparent backdrop-blur-[8px] -z-[1] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_0%,black_20%,transparent_80%)]"></div>
                     <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
                         <CircularText
@@ -66,7 +66,7 @@ export default function Navbar() {
                 {/* Navigation Items - Desktop */}
                 <nav
                     ref={navRef}
-                    className="hidden md:flex items-center gap-8 h-[60px] px-[2.4rem] pr-[calc(2.4rem+6px)] rounded-[50px] border border-white/[0.07] bg-white/[0.01] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] backdrop-blur-[15px] text-white"
+                    className="hidden md:flex items-center justify-self-center gap-8 h-[60px] px-[2.4rem] pr-[calc(2.4rem+6px)] rounded-[50px] border border-white/[0.07] bg-white/[0.01] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] backdrop-blur-[15px] text-white"
                 >
                     <Link 
                         href="/challenges"
@@ -104,7 +104,7 @@ export default function Navbar() {
                 </nav>
 
                 {/* CTA Group */}
-                <nav className="flex items-center gap-4 sm:gap-6 h-[50px] sm:h-[60px] px-4 sm:px-8 rounded-[50px] border border-white/[0.07] border-none bg-white/[0.01] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] backdrop-blur-[15px] text-white transition-all duration-300">
+                <nav className="flex items-center justify-self-end gap-4 sm:gap-6 h-[50px] sm:h-[60px] px-4 sm:px-8 rounded-[50px] border border-white/[0.07] border-none bg-white/[0.01] shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] backdrop-blur-[15px] text-white transition-all duration-300">
                     {session ? (
                         <div className="flex items-center gap-3 sm:gap-4 group" ref={userSectionRef}>
                             <Link href="/profile" className="flex items-center gap-3 hover:scale-105 transition-transform">
