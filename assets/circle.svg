@@ -10,7 +10,7 @@
 
             <!-- Group that contains the text and the rotation animation -->
             <g>
-                <text fill="currentColor" font-family="Inter, sans-serif" font-weight="600" font-size="20" letter-spacing="2">
+                <text fill="#fff" font-family="Inter, sans-serif" font-weight="600" font-size="20" letter-spacing="2">
                     <textPath href="#circlePath" startOffset="0%">
                         Coding * Challenges * Coding * Challenges *
                     </textPath>
