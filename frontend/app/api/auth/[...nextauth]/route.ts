@@ -26,11 +26,15 @@ const MOCK_USERS = {
     },
 };
 
-export const authOptions: AuthOptions = {
-    providers: [
+// Build providers list - only add Keycloak if configured
+const providers = [];
+
+// Only add Keycloak provider if client secret is configured
+if (process.env.KEYCLOAK_CLIENT_SECRET) {
+    providers.push(
         KeycloakProvider({
             clientId: process.env.KEYCLOAK_CLIENT_ID || "frontend-client",
-            clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
+            clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
             issuer: process.env.KEYCLOAK_ISSUER || "http://localhost:8081/realms/coding-challenges",
             authorization: {
                 params: {
@@ -38,88 +42,89 @@ export const authOptions: AuthOptions = {
                 },
                 url: `${process.env.KEYCLOAK_EXTERNAL_ISSUER || "http://localhost:8081/realms/coding-challenges"}/protocol/openid-connect/auth`,
             },
-        }),
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                username: { label: "Username", type: "text" },
-                password: { label: "Password", type: "password" }
-            },
-            async authorize(credentials) {
-                if (!credentials?.username || !credentials?.password) return null;
+        })
+    );
+}
 
-                // Check for demo mode logins (username: student/editor/admin, password: demo)
-                const username = credentials.username.toLowerCase();
-                if (credentials.password === 'demo' && username in MOCK_USERS) {
-                    const mockUser = MOCK_USERS[username as keyof typeof MOCK_USERS];
-                    return {
-                        id: mockUser.id,
-                        name: mockUser.name,
-                        email: mockUser.email,
-                        accessToken: 'demo-token',
-                        idToken: 'demo-id-token',
-                        refreshToken: 'demo-refresh-token',
-                        roles: mockUser.roles,
-                    } as any;
-                }
+// Always add credentials provider for demo login
+providers.push(
+    CredentialsProvider({
+        name: "Credentials",
+        credentials: {
+            username: { label: "Username", type: "text" },
+            password: { label: "Password", type: "password" }
+        },
+        async authorize(credentials) {
+            if (!credentials?.username || !credentials?.password) return null;
 
-                try {
-                    const issuer = process.env.KEYCLOAK_ISSUER || "http://localhost:8081/realms/coding-challenges";
-                    const tokenUrl = `${issuer}/protocol/openid-connect/token`;
+            // Check for demo mode logins (username: student/editor/admin, password: demo)
+            const username = credentials.username.toLowerCase();
+            if (credentials.password === 'demo' && username in MOCK_USERS) {
+                const mockUser = MOCK_USERS[username as keyof typeof MOCK_USERS];
+                return {
+                    id: mockUser.id,
+                    name: mockUser.name,
+                    email: mockUser.email,
+                    accessToken: 'demo-token',
+                    idToken: 'demo-id-token',
+                    refreshToken: 'demo-refresh-token',
+                    roles: mockUser.roles,
+                } as any;
+            }
 
-                    const params = new URLSearchParams();
-                    params.append('client_id', process.env.KEYCLOAK_CLIENT_ID || "frontend-client");
-                    params.append('client_secret', process.env.KEYCLOAK_CLIENT_SECRET || "");
-                    params.append('grant_type', 'password');
-                    params.append('username', credentials.username);
-                    params.append('password', credentials.password);
-                    params.append('scope', 'openid email profile');
+            // Only try Keycloak if configured
+            if (!process.env.KEYCLOAK_CLIENT_SECRET) {
+                return null;
+            }
 
-                    const response = await fetch(tokenUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: params
-                    });
+            try {
+                const issuer = process.env.KEYCLOAK_ISSUER || "http://localhost:8081/realms/coding-challenges";
+                const tokenUrl = `${issuer}/protocol/openid-connect/token`;
 
-                    const data = await response.json();
+                const params = new URLSearchParams();
+                params.append('client_id', process.env.KEYCLOAK_CLIENT_ID || "frontend-client");
+                params.append('client_secret', process.env.KEYCLOAK_CLIENT_SECRET);
+                params.append('grant_type', 'password');
+                params.append('username', credentials.username);
+                params.append('password', credentials.password);
+                params.append('scope', 'openid email profile');
 
-                    if (!response.ok) {
-                        console.error("Keycloak login failed:", data);
-                        return null;
-                    }
+                const response = await fetch(tokenUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
 
-                    const decoded: any = jwtDecode(data.access_token);
+                const data = await response.json();
 
-                    return {
-                        id: decoded.sub,
-                        name: decoded.name || decoded.preferred_username,
-                        email: decoded.email,
-                        accessToken: data.access_token,
-                        idToken: data.id_token,
-                        refreshToken: data.refresh_token,
-                        roles: decoded.realm_access?.roles || [],
-                    } as any;
-
-                } catch (error) {
-                    console.error("Authorize error:", error);
-                    // If Keycloak is unreachable, try demo login as fallback
-                    if (credentials.password === 'demo' && username in MOCK_USERS) {
-                        const mockUser = MOCK_USERS[username as keyof typeof MOCK_USERS];
-                        return {
-                            id: mockUser.id,
-                            name: mockUser.name,
-                            email: mockUser.email,
-                            accessToken: 'demo-token',
-                            idToken: 'demo-id-token',
-                            refreshToken: 'demo-refresh-token',
-                            roles: mockUser.roles,
-                        } as any;
-                    }
+                if (!response.ok) {
+                    console.error("Keycloak login failed:", data);
                     return null;
                 }
+
+                const decoded: any = jwtDecode(data.access_token);
+
+                return {
+                    id: decoded.sub,
+                    name: decoded.name || decoded.preferred_username,
+                    email: decoded.email,
+                    accessToken: data.access_token,
+                    idToken: data.id_token,
+                    refreshToken: data.refresh_token,
+                    roles: decoded.realm_access?.roles || [],
+                } as any;
+
+            } catch (error) {
+                console.error("Authorize error:", error);
+                return null;
             }
-        })
-    ],
+        }
+    })
+);
+
+export const authOptions: AuthOptions = {
+    providers,
+    secret: process.env.NEXTAUTH_SECRET || "demo-secret-for-development-only",
     callbacks: {
         async jwt({ token, account, user }) {
             if (account) {
