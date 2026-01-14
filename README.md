@@ -4,8 +4,6 @@
 	<p>Distributed coding challenge platform for students, editors, and admins.</p>
 </div>
 
----
-
 ## 🚀 Get Started
 
 Try the <b>demo login</b>:
@@ -18,8 +16,6 @@ Try the <b>demo login</b>:
 
 For local deployment instructions, see the <a href="/about">About</a> page.
 
----
-
 ## 🛠️ Services
 
 - <b>Frontend</b>: Next.js 16, TypeScript, Tailwind CSS
@@ -30,8 +26,6 @@ For local deployment instructions, see the <a href="/about">About</a> page.
 - <b>Auth</b>: Keycloak (OAuth2/OIDC)
 - <b>Database</b>: PostgreSQL
 - <b>Broker</b>: RabbitMQ
-
----
 
 ## 📄 License
 
