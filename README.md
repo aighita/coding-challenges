@@ -1,5 +1,3 @@
-git clone https://github.com/aighita/coding-challenges.git
-
 <div align="center">
 	<img src="assets/coding-animation.svg" width="120" height="120" />
 	<h1><b>Coding Challenges</b></h1>
