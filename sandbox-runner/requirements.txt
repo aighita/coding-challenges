@@ -1,3 +1,6 @@
 pika
 psycopg2-binary
 python-dotenv
+
+# Test dependencies
+pytest==8.0.0
