@@ -40,7 +40,7 @@ except Exception as e:
     print(f"Redis connection failed: {e}")
     redis_client = None
 
-# Rate Limiter Middleware
+# Rate Limiter Middleware - MODUL AVANSAT 1
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     if request.url.path == "/health":

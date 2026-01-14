@@ -150,6 +150,7 @@ async def submit_solution(id: str, submission_data: SubmissionCreate, user: dict
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
 
+    # MODUL AVANSAT 2
     # Check for cached submission - same code, same challenge, same user, already completed
     cached_result = await db.execute(
         select(Submission).where(
