@@ -142,7 +142,7 @@ export default function Navbar() {
                         </div>
                     ) : (
                         <div className="flex items-center gap-4 sm:gap-6">
-                            <Link href="/register" className="bg-gradient-to-r from-[#7c3aed] to-[#182fff] px-6 py-2 rounded-full text-xs font-bold hover:opacity-90 transition-opacity">
+                            <Link href="/login" className="bg-gradient-to-r from-[#7c3aed] to-[#182fff] px-6 py-2 rounded-full text-xs font-bold hover:opacity-90 transition-opacity">
                                 Join
                             </Link>
                         </div>
