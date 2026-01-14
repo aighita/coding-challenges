@@ -4,9 +4,9 @@
 	<p>Distributed coding challenge platform for students, editors, and admins.</p>
 </div>
 
-## 🚀 Get Started
+# Get Started
 
-Try the <b>demo login</b>:
+Try the [<b>demo</b>](https://coding-challenges-seven.vercel.app/) with mock data:
 
 | Username | Password | Role    |
 |----------|----------|---------|
@@ -14,9 +14,9 @@ Try the <b>demo login</b>:
 | editor   | demo     | Editor  |
 | admin    | demo     | Admin   |
 
-For local deployment instructions, see the <a href="/about">About</a> page.
+For local deployment instructions, see [instructions.](https://coding-challenges-seven.vercel.app/about)
 
-## 🛠️ Services
+## Services
 
 - <b>Frontend</b>: Next.js 16, TypeScript, Tailwind CSS
 - <b>Gateway</b>: FastAPI (Python)
