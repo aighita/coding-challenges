@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="assets/coding-animation.svg" width="120" height="120" />
+	<img src="assets/circle.svg" width="120" height="120" />
 	<h1><b>Coding Challenges</b></h1>
 	<p>Distributed coding challenge platform for students, editors, and admins.</p>
 </div>

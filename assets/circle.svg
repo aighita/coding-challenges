@@ -1,0 +1,30 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="text-slate-800">
+            <!-- 
+                 We define the path in <defs> or just leave it invisible. 
+                 Since we need to reference it, having it in defs is cleaner 
+                 if we don't want to render the line itself.
+            -->
+            <defs>
+                <path id="circlePath" d="M 100, 100 m -82, 0 a 82,82 0 1,1 164,0 a 82,82 0 1,1 -164,0" />
+            </defs>
+
+            <!-- Group that contains the text and the rotation animation -->
+            <g>
+                <text fill="currentColor" font-family="Inter, sans-serif" font-weight="600" font-size="20" letter-spacing="2">
+                    <textPath href="#circlePath" startOffset="0%">
+                        Coding * Challenges * Coding * Challenges *
+                    </textPath>
+                </text>
+                
+                <!-- Native SVG Animation -->
+                <animateTransform 
+                    attributeName="transform" 
+                    attributeType="XML" 
+                    type="rotate" 
+                    from="0 100 100" 
+                    to="360 100 100" 
+                    dur="10s" 
+                    repeatCount="indefinite" 
+                />
+            </g>
+        </svg>
