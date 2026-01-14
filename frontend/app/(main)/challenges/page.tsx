@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { useServiceStatus } from '@/lib/serviceStatus';
+import { MOCK_CHALLENGES } from '@/lib/mockData';
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,7 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Code2, ChevronRight, Search, Trash2 } from 'lucide-react';
+import { Code2, ChevronRight, Search, Trash2, WifiOff } from 'lucide-react';
 
 interface Challenge {
     id: string;
@@ -24,9 +26,11 @@ interface Challenge {
 
 export default function ChallengesPage() {
     const { data: session } = useSession();
+    const { isOnline, isChecking } = useServiceStatus();
     const [challenges, setChallenges] = useState<Challenge[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [difficultyFilter, setDifficultyFilter] = useState('All');
+    const [usingMockData, setUsingMockData] = useState(false);
 
     const canDelete = session?.roles?.includes('editor') || session?.roles?.includes('admin');
 
@@ -34,19 +38,34 @@ export default function ChallengesPage() {
         try {
             const response = await axios.get('/api/proxy/challenges');
             setChallenges(response.data);
+            setUsingMockData(false);
         } catch (error) {
-            console.error('Error fetching challenges:', error);
+            console.error('Error fetching challenges, using mock data:', error);
+            setChallenges(MOCK_CHALLENGES);
+            setUsingMockData(true);
         }
     };
 
     useEffect(() => {
-        fetchChallenges();
-    }, []);
+        if (!isChecking) {
+            if (isOnline) {
+                fetchChallenges();
+            } else {
+                setChallenges(MOCK_CHALLENGES);
+                setUsingMockData(true);
+            }
+        }
+    }, [isOnline, isChecking]);
 
     const handleDelete = async (e: React.MouseEvent, challengeId: string) => {
         e.preventDefault();
         e.stopPropagation();
         
+        if (usingMockData) {
+            alert('Cannot delete challenges in demo mode');
+            return;
+        }
+
         if (!confirm('Are you sure you want to delete this challenge?')) {
             return;
         }
@@ -88,8 +107,20 @@ export default function ChallengesPage() {
         <div className="max-w-[1200px] mx-auto space-y-8">
             {/* Header */}
             <div className="space-y-2">
-                <h1 className="text-3xl font-bold text-white">Challenges</h1>
-                <p className="text-gray-400">Select a challenge to start coding</p>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-white">Challenges</h1>
+                    {usingMockData && (
+                        <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/20">
+                            <WifiOff className="w-3 h-3 mr-1" />
+                            Demo Mode
+                        </Badge>
+                    )}
+                </div>
+                <p className="text-gray-400">
+                    {usingMockData 
+                        ? 'Showing sample challenges - services are offline' 
+                        : 'Select a challenge to start coding'}
+                </p>
             </div>
 
             {/* Filters */}

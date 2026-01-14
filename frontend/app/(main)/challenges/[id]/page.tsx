@@ -5,8 +5,10 @@ import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import { useServiceStatus } from '@/lib/serviceStatus';
+import { MOCK_CHALLENGES, MOCK_SUBMISSIONS } from '@/lib/mockData';
 import CodeEditor from '@/components/CodeEditor';
-import { Code2, Clock, CheckCircle2, XCircle, AlertCircle, Loader2, Send, History, FileCode2, ChevronDown, ChevronUp, Terminal, Bug, Zap } from 'lucide-react';
+import { Code2, Clock, CheckCircle2, XCircle, AlertCircle, Loader2, Send, History, FileCode2, ChevronDown, ChevronUp, Terminal, Bug, Zap, WifiOff } from 'lucide-react';
 
 interface Challenge {
     id: string;
@@ -27,15 +29,17 @@ interface Submission {
 export default function ChallengeDetailPage() {
     const params = useParams();
     const { data: session } = useSession();
+    const { isOnline, isChecking } = useServiceStatus();
     const [challenge, setChallenge] = useState<Challenge | null>(null);
     const [code, setCode] = useState('');
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [loading, setLoading] = useState(false);
     const [polling, setPolling] = useState(false);
     const [expandedSubmission, setExpandedSubmission] = useState<string | null>(null);
+    const [usingMockData, setUsingMockData] = useState(false);
 
     const fetchSubmissions = useCallback(async (id: string) => {
-        if (!session?.accessToken) return;
+        if (!session?.accessToken || usingMockData) return;
         try {
             const response = await axios.get(`/api/proxy/challenges/${id}/submissions`, {
                 headers: { Authorization: `Bearer ${session.accessToken}` }
@@ -48,39 +52,62 @@ export default function ChallengeDetailPage() {
         } catch (error) {
             console.error('Error fetching submissions', error);
         }
-    }, [session?.accessToken]);
-
-    useEffect(() => {
-        if (params.id) {
-            fetchChallenge(params.id as string);
-            if (session) {
-                fetchSubmissions(params.id as string);
-            }
-        }
-    }, [params.id, session, fetchSubmissions]);
-
-    // Polling for pending submissions
-    useEffect(() => {
-        if (!polling || !params.id || !session) return;
-        
-        const interval = setInterval(() => {
-            fetchSubmissions(params.id as string);
-        }, 2000); // Poll every 2 seconds
-
-        return () => clearInterval(interval);
-    }, [polling, params.id, session, fetchSubmissions]);
+    }, [session?.accessToken, usingMockData]);
 
     const fetchChallenge = async (id: string) => {
         try {
             const response = await axios.get(`/api/proxy/challenges/${id}`);
             setChallenge(response.data);
             setCode(response.data.template);
+            setUsingMockData(false);
         } catch (error) {
-            console.error('Error fetching challenge:', error);
+            console.error('Error fetching challenge, using mock data:', error);
+            // Try to find mock challenge
+            const mockChallenge = MOCK_CHALLENGES.find(c => c.id === id);
+            if (mockChallenge) {
+                setChallenge(mockChallenge);
+                setCode(mockChallenge.template);
+                setUsingMockData(true);
+            }
         }
     };
 
+    useEffect(() => {
+        if (params.id && !isChecking) {
+            if (isOnline) {
+                fetchChallenge(params.id as string);
+                if (session) {
+                    fetchSubmissions(params.id as string);
+                }
+            } else {
+                // Use mock data
+                const mockChallenge = MOCK_CHALLENGES.find(c => c.id === params.id);
+                if (mockChallenge) {
+                    setChallenge(mockChallenge);
+                    setCode(mockChallenge.template);
+                    setUsingMockData(true);
+                }
+            }
+        }
+    }, [params.id, session, fetchSubmissions, isOnline, isChecking]);
+
+    // Polling for pending submissions
+    useEffect(() => {
+        if (!polling || !params.id || !session || usingMockData) return;
+        
+        const interval = setInterval(() => {
+            fetchSubmissions(params.id as string);
+        }, 2000); // Poll every 2 seconds
+
+        return () => clearInterval(interval);
+    }, [polling, params.id, session, fetchSubmissions, usingMockData]);
+
     const handleSubmit = async () => {
+        if (usingMockData) {
+            toast.error('Cannot submit in demo mode - services are offline');
+            return;
+        }
+
         if (!session) {
             toast.error('Please sign in to submit');
             return;
@@ -149,6 +176,15 @@ export default function ChallengeDetailPage() {
 
     return (
         <div className="max-w-[1200px] mx-auto">
+            {usingMockData && (
+                <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+                    <WifiOff className="w-5 h-5 text-amber-400" />
+                    <div>
+                        <p className="text-amber-400 font-medium">Demo Mode</p>
+                        <p className="text-amber-400/70 text-sm">Services are offline. Code submission is disabled.</p>
+                    </div>
+                </div>
+            )}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Panel - Challenge Info */}
                 <div className="space-y-6">
@@ -160,7 +196,7 @@ export default function ChallengeDetailPage() {
                                 {challenge.difficulty}
                             </span>
                         </div>
-                        <p className="text-gray-400 leading-relaxed">{challenge.description}</p>
+                        <p className="text-gray-400 leading-relaxed whitespace-pre-wrap">{challenge.description}</p>
                     </div>
 
                     {/* Submission History */}

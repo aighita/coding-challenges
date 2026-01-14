@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useServiceStatus } from '@/lib/serviceStatus';
+import { MOCK_USERS } from '@/lib/mockData';
 import { Checkbox } from "@/components/ui/checkbox";
-import { Users, Shield, UserCheck, Loader2 } from 'lucide-react';
+import { Users, Shield, UserCheck, Loader2, WifiOff } from 'lucide-react';
 
 interface User {
     id: string;
@@ -16,14 +18,26 @@ interface User {
 
 export default function UsersPage() {
     const { data: session } = useSession();
+    const { isOnline, isChecking } = useServiceStatus();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [usingMockData, setUsingMockData] = useState(false);
 
     useEffect(() => {
-        if (session?.roles?.includes('admin')) {
-            fetchUsers();
+        if (!isChecking) {
+            if (session?.roles?.includes('admin')) {
+                if (isOnline) {
+                    fetchUsers();
+                } else {
+                    setUsers(MOCK_USERS);
+                    setUsingMockData(true);
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+            }
         }
-    }, [session]);
+    }, [session, isOnline, isChecking]);
 
     const fetchUsers = async () => {
         try {
@@ -31,15 +45,23 @@ export default function UsersPage() {
                 headers: { Authorization: `Bearer ${session?.accessToken}` }
             });
             setUsers(response.data);
+            setUsingMockData(false);
         } catch (error) {
-            console.error('Error fetching users:', error);
-            toast.error('Failed to fetch users');
+            console.error('Error fetching users, using mock data:', error);
+            setUsers(MOCK_USERS);
+            setUsingMockData(true);
+            toast.error('Using demo data - services offline');
         } finally {
             setLoading(false);
         }
     };
 
     const handleRoleChange = async (userId: string, newRole: string) => {
+        if (usingMockData) {
+            toast.error('Cannot change roles in demo mode');
+            return;
+        }
+
         try {
             await axios.put(`/api/proxy/users/${userId}/role`, 
                 { role: newRole },
@@ -90,8 +112,20 @@ export default function UsersPage() {
         <div className="max-w-[1200px] mx-auto space-y-8">
             {/* Header */}
             <div className="space-y-2">
-                <h1 className="text-3xl font-bold text-white">User Management</h1>
-                <p className="text-gray-400">Manage user roles and permissions</p>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-white">User Management</h1>
+                    {usingMockData && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border bg-amber-500/10 text-amber-400 border-amber-500/20">
+                            <WifiOff className="w-3 h-3" />
+                            Demo Mode
+                        </span>
+                    )}
+                </div>
+                <p className="text-gray-400">
+                    {usingMockData 
+                        ? 'Showing sample users - role changes disabled' 
+                        : 'Manage user roles and permissions'}
+                </p>
             </div>
 
             {/* Users Table */}

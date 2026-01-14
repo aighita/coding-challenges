@@ -46,7 +46,7 @@ export default function Navbar() {
     return (
         <div className="fixed top-0 left-0 w-full z-[100] flex flex-col items-center pointer-events-none bg-gradient-to-b from-[#060010] to-transparent backdrop-blur-md">
             <div className="w-full pointer-events-auto">
-                {/* <Announcement /> */}
+                <Announcement />
             </div>
             <div className="flex items-center justify-center w-full px-[1rem] sm:px-[2em] md:px-[4em] h-[80px] sm:h-[120px] md:h-[160px] bg-gradient-to-b from-[#060010] to-transparent transition-all duration-300">
                 <div className="grid grid-cols-3 items-center w-full max-w-[1200px] mx-auto pointer-events-auto">

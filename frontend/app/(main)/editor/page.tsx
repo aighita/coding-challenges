@@ -5,14 +5,16 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useServiceStatus } from '@/lib/serviceStatus';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code2, FileCode, FileText, TestTube, Sparkles } from 'lucide-react';
+import { Code2, FileCode, FileText, TestTube, Sparkles, WifiOff } from 'lucide-react';
 
 export default function EditorPage() {
     const { data: session } = useSession();
+    const { isOnline, isChecking } = useServiceStatus();
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -34,6 +36,12 @@ export default function EditorPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!isOnline) {
+            toast.error('Cannot create challenges - services are offline');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -77,6 +85,17 @@ export default function EditorPage() {
 
     return (
         <div className="max-w-[1200px] mx-auto space-y-8">
+            {/* Offline Warning */}
+            {!isOnline && !isChecking && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+                    <WifiOff className="w-5 h-5 text-amber-400" />
+                    <div>
+                        <p className="text-amber-400 font-medium">Demo Mode</p>
+                        <p className="text-amber-400/70 text-sm">Services are offline. Challenge creation is disabled.</p>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="space-y-2">
                 <h1 className="text-3xl font-bold text-white">Challenge Editor</h1>

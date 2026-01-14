@@ -5,14 +5,16 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useServiceStatus } from '@/lib/serviceStatus';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Mail, Shield, Save, Loader2, LogOut } from 'lucide-react';
+import { User, Mail, Shield, Save, Loader2, LogOut, WifiOff } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
 export default function ProfilePage() {
     const { data: session, update } = useSession();
+    const { isOnline, isChecking } = useServiceStatus();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
@@ -38,6 +40,12 @@ export default function ProfilePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!isOnline) {
+            toast.error('Cannot update profile - services are offline');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -70,6 +78,17 @@ export default function ProfilePage() {
 
     return (
         <div className="max-w-[1200px] mx-auto space-y-8">
+            {/* Offline Warning */}
+            {!isOnline && !isChecking && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+                    <WifiOff className="w-5 h-5 text-amber-400" />
+                    <div>
+                        <p className="text-amber-400 font-medium">Demo Mode</p>
+                        <p className="text-amber-400/70 text-sm">Services are offline. Profile updates are disabled.</p>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="space-y-2">
                 <h1 className="text-3xl font-bold text-white">Profile</h1>
