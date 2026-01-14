@@ -4,13 +4,15 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useServiceStatus } from "@/lib/serviceStatus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Loader2, User, Lock, LogIn, Sparkles } from "lucide-react";
+import { AlertCircle, Loader2, User, Lock, LogIn, Sparkles, WifiOff } from "lucide-react";
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { isOnline, isChecking } = useServiceStatus();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [credentials, setCredentials] = useState({
@@ -23,6 +25,30 @@ function LoginForm() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    };
+
+    const handleDemoLogin = async (role: 'student' | 'editor' | 'admin') => {
+        setError("");
+        setLoading(true);
+        try {
+            const result = await signIn("credentials", {
+                username: role,
+                password: "demo",
+                redirect: false,
+                callbackUrl,
+            });
+
+            if (result?.error) {
+                setError("Demo login failed. Please try again.");
+                setLoading(false);
+            } else {
+                router.push(callbackUrl);
+                router.refresh();
+            }
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+            setLoading(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -143,6 +169,49 @@ function LoginForm() {
                             )}
                         </Button>
                     </form>
+
+                    {/* Demo Login Section */}
+                    {!isOnline && !isChecking && (
+                        <div className="mt-6 pt-6 border-t border-white/10">
+                            <div className="flex items-center gap-2 mb-4">
+                                <WifiOff className="w-4 h-4 text-amber-400" />
+                                <span className="text-sm text-amber-400 font-medium">Demo Mode - Services Offline</span>
+                            </div>
+                            <p className="text-xs text-gray-500 mb-3">Sign in with a demo account to explore:</p>
+                            <div className="grid grid-cols-3 gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDemoLogin('student')}
+                                    disabled={loading}
+                                    className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300"
+                                >
+                                    Student
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDemoLogin('editor')}
+                                    disabled={loading}
+                                    className="bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20 hover:text-amber-300"
+                                >
+                                    Editor
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDemoLogin('admin')}
+                                    disabled={loading}
+                                    className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                                >
+                                    Admin
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

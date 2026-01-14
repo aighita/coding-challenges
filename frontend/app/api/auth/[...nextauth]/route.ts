@@ -4,6 +4,28 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
 import { jwtDecode } from "jwt-decode";
 
+// Mock users for demo mode when services are offline
+const MOCK_USERS = {
+    student: {
+        id: 'demo-student-1',
+        name: 'Demo Student',
+        email: 'student@demo.com',
+        roles: ['student'],
+    },
+    editor: {
+        id: 'demo-editor-1',
+        name: 'Demo Editor',
+        email: 'editor@demo.com',
+        roles: ['student', 'editor'],
+    },
+    admin: {
+        id: 'demo-admin-1',
+        name: 'Demo Admin',
+        email: 'admin@demo.com',
+        roles: ['student', 'editor', 'admin'],
+    },
+};
+
 export const authOptions: AuthOptions = {
     providers: [
         KeycloakProvider({
@@ -25,6 +47,21 @@ export const authOptions: AuthOptions = {
             },
             async authorize(credentials) {
                 if (!credentials?.username || !credentials?.password) return null;
+
+                // Check for demo mode logins (username: student/editor/admin, password: demo)
+                const username = credentials.username.toLowerCase();
+                if (credentials.password === 'demo' && username in MOCK_USERS) {
+                    const mockUser = MOCK_USERS[username as keyof typeof MOCK_USERS];
+                    return {
+                        id: mockUser.id,
+                        name: mockUser.name,
+                        email: mockUser.email,
+                        accessToken: 'demo-token',
+                        idToken: 'demo-id-token',
+                        refreshToken: 'demo-refresh-token',
+                        roles: mockUser.roles,
+                    } as any;
+                }
 
                 try {
                     const issuer = process.env.KEYCLOAK_ISSUER || "http://localhost:8081/realms/coding-challenges";
@@ -65,6 +102,19 @@ export const authOptions: AuthOptions = {
 
                 } catch (error) {
                     console.error("Authorize error:", error);
+                    // If Keycloak is unreachable, try demo login as fallback
+                    if (credentials.password === 'demo' && username in MOCK_USERS) {
+                        const mockUser = MOCK_USERS[username as keyof typeof MOCK_USERS];
+                        return {
+                            id: mockUser.id,
+                            name: mockUser.name,
+                            email: mockUser.email,
+                            accessToken: 'demo-token',
+                            idToken: 'demo-id-token',
+                            refreshToken: 'demo-refresh-token',
+                            roles: mockUser.roles,
+                        } as any;
+                    }
                     return null;
                 }
             }

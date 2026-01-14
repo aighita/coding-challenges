@@ -101,6 +101,16 @@ export default function Navbar() {
                             Users
                         </Link>
                     )}
+                    
+                    <Link 
+                        href="/about"
+                        className={cn(
+                            "relative no-underline text-inherit font-normal opacity-60 transition-all duration-300 hover:opacity-100 hover:-translate-y-[1px]",
+                            isActive('/about') && "opacity-100 before:content-[''] before:absolute before:w-[6px] before:h-[6px] before:bg-white before:rounded-full before:-left-[12px] before:top-1/2 before:-translate-y-1/2"
+                        )}
+                    >
+                        About
+                    </Link>
                 </nav>
 
                 {/* CTA Group */}
