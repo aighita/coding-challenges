@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
     Select,
     SelectContent,
@@ -12,7 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Code2, ChevronRight, Search } from 'lucide-react';
+import { Code2, ChevronRight, Search, Trash2 } from 'lucide-react';
 
 interface Challenge {
     id: string;
@@ -21,23 +23,46 @@ interface Challenge {
 }
 
 export default function ChallengesPage() {
+    const { data: session } = useSession();
     const [challenges, setChallenges] = useState<Challenge[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [difficultyFilter, setDifficultyFilter] = useState('All');
 
-    useEffect(() => {
-        // TODO: In a real app, this would call the Gateway URL not hardcoded
-        const fetchChallenges = async () => {
-            try {
-                const response = await axios.get('/api/proxy/challenges');
-                setChallenges(response.data);
-            } catch (error) {
-                console.error('Error fetching challenges:', error);
-            }
-        };
+    const canDelete = session?.roles?.includes('editor') || session?.roles?.includes('admin');
 
+    const fetchChallenges = async () => {
+        try {
+            const response = await axios.get('/api/proxy/challenges');
+            setChallenges(response.data);
+        } catch (error) {
+            console.error('Error fetching challenges:', error);
+        }
+    };
+
+    useEffect(() => {
         fetchChallenges();
     }, []);
+
+    const handleDelete = async (e: React.MouseEvent, challengeId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!confirm('Are you sure you want to delete this challenge?')) {
+            return;
+        }
+
+        try {
+            await axios.delete(`/api/proxy/challenges/${challengeId}`, {
+                headers: {
+                    Authorization: `Bearer ${session?.accessToken}`,
+                },
+            });
+            fetchChallenges();
+        } catch (error) {
+            console.error('Error deleting challenge:', error);
+            alert('Failed to delete challenge');
+        }
+    };
 
     const filteredChallenges = challenges.filter(challenge => {
         const matchesSearch = challenge.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -122,6 +147,18 @@ export default function ChallengesPage() {
                             >
                                 {challenge.difficulty}
                             </Badge>
+
+                            {/* Delete Button for Editors/Admins */}
+                            {canDelete && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => handleDelete(e, challenge.id)}
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            )}
 
                             {/* Arrow */}
                             <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />

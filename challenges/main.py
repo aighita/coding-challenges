@@ -229,3 +229,23 @@ async def get_submission(id: str, db: AsyncSession = Depends(get_db)):
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
     return submission
+
+@app.delete("/{id}")
+async def delete_challenge(id: str, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    roles = user.get("realm_access", {}).get("roles", [])
+    if "editor" not in roles and "admin" not in roles:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    result = await db.execute(select(Challenge).where(Challenge.id == id))
+    challenge = result.scalar_one_or_none()
+    if not challenge:
+        raise HTTPException(status_code=404, detail="Challenge not found")
+    
+    # Delete associated submissions first
+    await db.execute(select(Submission).where(Submission.challengeId == id))
+    from sqlalchemy import delete
+    await db.execute(delete(Submission).where(Submission.challengeId == id))
+    
+    await db.delete(challenge)
+    await db.commit()
+    return {"message": "Challenge deleted successfully"}
