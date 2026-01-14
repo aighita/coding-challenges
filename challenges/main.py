@@ -150,7 +150,34 @@ async def submit_solution(id: str, submission_data: SubmissionCreate, user: dict
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
 
-    # Create submission
+    # Check for cached submission - same code, same challenge, same user, already completed
+    cached_result = await db.execute(
+        select(Submission).where(
+            Submission.challengeId == id,
+            Submission.userId == user_id,
+            Submission.code == submission_data.code,
+            Submission.status == "COMPLETED"
+        ).order_by(Submission.createdAt.desc()).limit(1)
+    )
+    cached_submission = cached_result.scalar_one_or_none()
+    
+    if cached_submission:
+        # Return cached result - create a new submission record with the cached verdict
+        new_submission = Submission(
+            challengeId=id,
+            userId=user_id,
+            code=submission_data.code,
+            status="COMPLETED",
+            verdict=cached_submission.verdict,
+            output=f"[Cached] {cached_submission.output}" if cached_submission.output else "[Cached result]"
+        )
+        db.add(new_submission)
+        await db.commit()
+        await db.refresh(new_submission)
+        print(f"Returning cached result for submission {new_submission.id} (original: {cached_submission.id})")
+        return new_submission
+
+    # Create new submission
     submission = Submission(
         challengeId=id,
         userId=user_id,
